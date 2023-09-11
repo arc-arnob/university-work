@@ -19,6 +19,7 @@ returns the posterior probabilities.
 """
 
 from typing import List
+import unittest
 
 class Bayes:
     def __init__(self, hypotheses: List[str], priors: List[float], observations: List[str], likelihood_array: List[List[float]]) -> None:
@@ -70,7 +71,7 @@ class Bayes:
         return posteriors;
     
 
-import unittest
+
 
 
 class TestBayes(unittest.TestCase):
@@ -108,11 +109,12 @@ class TestBayes(unittest.TestCase):
         observations = ["chocolate", "vanilla"]
         posteriors = self.bayes_model.compute_posterior(observations)
         expected_posteriors = [0.2608695652173913, 0.7391304347826086]
-        tolerance = 0.01
+        tolerance = 0.001
         for a, b in zip(posteriors, expected_posteriors):
             self.assertAlmostEqual(a, b, delta=tolerance)
 
 def assignmentMain():
+    
     hypothesis = ["Bowl1", "Bowl2"]
     priors = [0.5, 0.5]
     observations = ["chocolate", "vanilla"]
@@ -146,10 +148,30 @@ def assignmentMain():
     print("'vanilla', 'chocolate', 'chocolate', 'vanilla' - postereior ", bayes_model.compute_posterior(['vanilla', 'chocolate', 'chocolate', 'vanilla']));
 
 
+def predictArcherSkills():
+    observations = ["yellow", "white", "blue", "red", "red", "blue"]
+    hypotheses: List[str] = ['begineer', 'intermediate', 'advanced', 'expert'];
+    priors: List[float] = [0.25, 0.25, 0.25, 0.25];
+    likelihood_array: List[List[float]] = [[0.05, 0.1, 0.4, 0.25, 0.2], 
+                                           [0.1, 0.2, 0.4, 0.2, 0.1],
+                                           [0.2, 0.4, 0.25, 0.1, 0.05],
+                                           [0.3, 0.5, 0.125, 0.05, 0.025]]
+    bayes_model_archer = Bayes(hypotheses, priors, observations, likelihood_array);
+    print("All Posteriors: ", bayes_model_archer.compute_posterior(observations));
+    print("Probability That Archer is Intermediate: ", bayes_model_archer.compute_posterior(observations)[1]);
+    # Calculate P()
+
 if __name__ == '__main__':
     
+    print("********* Running Tests *********")
     unittest.main();
+    print("********* Tests Ended *********")
+    print("********* Running Assigment Demo Questions *********")
     assignmentMain();
+    print("********* Assigment Demo Questions Ended *********")
+    print("********* Running Archer Problem *********")
+    predictArcherSkills();
+    print("********* Archer Problem Ended*********")
             
     
     
