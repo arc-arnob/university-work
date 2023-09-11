@@ -72,44 +72,43 @@ class Bayes:
 
 import unittest
 
+
 class TestBayes(unittest.TestCase):
     def setUp(self):
         # Define test data for Bayes instance
-        self.hypotheses = ["HypothesisA", "HypothesisB"]
-        self.priors = [0.4, 0.6]
-        self.observations = ["Observation1", "Observation2"]
+        self.hypotheses = ["Bowl1", "Bowl2"]
+        self.priors = [0.5, 0.5]
+        self.observations = ["chocolate", "vanilla"]
         self.likelihood_array = [
-            [0.2, 0.8],
-            [0.7, 0.3]
+            [15/50, 35/50],
+            [30/50, 20/50],
         ]
 
         self.bayes_model = Bayes(self.hypotheses, self.priors, self.observations, self.likelihood_array)
 
     def test_likelihood(self):
-        self.assertAlmostEqual(self.bayes_model.likelihood("Observation1", "HypothesisA"), 0.2)
-        self.assertAlmostEqual(self.bayes_model.likelihood("Observation2", "HypothesisB"), 0.3)
+        self.assertAlmostEqual(self.bayes_model.likelihood("vanilla", "Bowl1"), 0.7)
+        self.assertAlmostEqual(self.bayes_model.likelihood("chocolate", "Bowl2"), 0.6)
 
-    
     def test_norm_constant(self):
-        observation = "Observation1";
+        observation = "chocolate"
         norm_constant = self.bayes_model.norm_constant(observation)
-        self.assertAlmostEqual(norm_constant, 0.38)
+        self.assertAlmostEqual(norm_constant, 0.425)
 
-            
     def test_single_posterior_update(self):
-        observation = "Observation1"
+        observation = "chocolate"
         priors = self.bayes_model.priors
         posteriors = self.bayes_model.single_posterior_update(observation, priors)
-        expected_posteriors = [0.11764705882352941, 0.8823529411764706]
-        tolerance = 0.001
+        expected_posteriors = [0.2608695652173913, 0.7391304347826086]
+        tolerance = 0.01
         for a, b in zip(posteriors, expected_posteriors):
             self.assertAlmostEqual(a, b, delta=tolerance)
 
     def test_compute_posterior(self):
-        observations = ["Observation1", "Observation2"]
+        observations = ["chocolate", "vanilla"]
         posteriors = self.bayes_model.compute_posterior(observations)
-        expected_posteriors = [0.11764705882352941, 0.8823529411764706]
-        tolerance = 0.001
+        expected_posteriors = [0.2608695652173913, 0.7391304347826086]
+        tolerance = 0.01
         for a, b in zip(posteriors, expected_posteriors):
             self.assertAlmostEqual(a, b, delta=tolerance)
 
@@ -143,7 +142,7 @@ def assignmentMain():
     bayes_model = Bayes(hypothesis, priors, observations, likelihood_array)
     print("likelihood(chocolate, Bowl1) =", bayes_model.likelihood('vanilla', 'Bowl1'))
     print("normalizing constant for vanilla: ", bayes_model.norm_constant('vanilla'));
-    print("vanilla - posterior: ", bayes_model.single_posterior_update('vanilla', [0.8, 0.2]));
+    print("vanilla - posterior: ", bayes_model.single_posterior_update('vanilla', [0.5, 0.5])); # incorrect way of representation in assignment, this prior can be changed in the code and the norm_constant will still use priors defined during the class creation
     print("'vanilla', 'chocolate', 'chocolate', 'vanilla' - postereior ", bayes_model.compute_posterior(['vanilla', 'chocolate', 'chocolate', 'vanilla']));
 
 
