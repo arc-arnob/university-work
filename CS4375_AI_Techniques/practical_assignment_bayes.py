@@ -56,13 +56,13 @@ class Bayes:
     def single_posterior_update(self, observation) -> List[float]:
         norm_constant = self.norm_constant(observation)
         # Storage for the posterior probabilities for each hypothesis
-        priors = []
+        posteriors = []
         for index, hypothesis in enumerate(self.hypotheses):
             likelihood = self.likelihood(observation, hypothesis)
             posterior = (self.priors[index] * likelihood) / norm_constant
-            priors.append(posterior)
-        self.priors = priors
-        return priors
+            posteriors.append(posterior)
+        self.priors = posteriors
+        return posteriors
 
     def compute_posterior(self, observations: List[str]) -> List[float]:
         result = []
