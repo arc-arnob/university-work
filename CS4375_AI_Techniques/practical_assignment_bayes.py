@@ -134,6 +134,9 @@ def predict_archer_skills():
     existing_file.write("All Posteriors: " + str(ce6_result) + "\n")
     ce7_result = bayes_model_archer.compute_posterior(observations)[1]
     existing_file.write("Probability That Archer is Intermediate: " + str(ce7_result) + '\n')
+
+    # clean up resourcess
+    existing_file.close()
     # Calculate P()
 
 
