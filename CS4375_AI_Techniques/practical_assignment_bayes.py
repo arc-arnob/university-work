@@ -19,7 +19,6 @@ returns the posterior probabilities.
 """
 
 from typing import List
-import unittest
 
 
 class Bayes:
