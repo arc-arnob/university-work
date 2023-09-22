@@ -157,14 +157,13 @@ def perform_vigenere_cipher(ciphertext):
     }
     bigrams = generate_ngrams(ciphertext, 2)
     trigrams = generate_ngrams(ciphertext, 3)
-    print("bigrams: ", bigrams)
-    print("Trigrams", trigrams)
     bigram_indexes = calculate_distance_between_n_grams(bigrams)
+    most_occurring_bigram = get_bigram_with_most_occurrences(bigram_indexes)
     bigram_distance_list = []
-    for index, i in enumerate(bigram_indexes['WX']):    # TODO: Get the Bigram with maximum occurrences
-        if index == len(bigram_indexes['WX']) - 1:
+    for index, i in enumerate(bigram_indexes[most_occurring_bigram]):    # TODO: Get the Bigram with maximum occurrences
+        if index == len(bigram_indexes[most_occurring_bigram]) - 1:
             continue
-        bigram_distance_list.append(bigram_indexes['WX'][index + 1] - i)
+        bigram_distance_list.append(bigram_indexes[most_occurring_bigram][index + 1] - i)
     print("GCD Values: ", list_of_gcd(bigram_distance_list), "with distances", bigram_distance_list)
     bins = bin_creation_with_n(sentence, 6)     # TODO: Run these Bins over almost all sensible GCDs
 
@@ -178,7 +177,7 @@ def perform_vigenere_cipher(ciphertext):
     statistical_distribution_table = {}
     for i in range(0, 26):
         given_bin_letter_frequencies = calculate_letter_frequency(perform_k_shift(''.join(bins[5]), i))
-        plot_histogram(given_bin_letter_frequencies, str(i))
+        # plot_histogram(given_bin_letter_frequencies, str(i))
         given_bin_letter_probability_distribution = calculater_letter_probability_distribution(given_bin_letter_frequencies)
         # print(english_letter_probability_distribution, given_bin_letter_probability_distribution)  # TODO: Plot these on graphs
         print("Statistical Distance with shift i", str(i), calculate_statistical_distance(english_letter_probability_distribution,
@@ -191,6 +190,17 @@ def perform_k_shift(ciphertext, shift):
         for char in ciphertext.upper()
     )
     return shifted_ciphertext
+
+
+def get_bigram_with_most_occurrences(bigrams_dict):
+    max_length = 0
+    longest_key = None
+
+    for key, value in bigrams_dict.items():
+        if len(value) > max_length:
+            max_length = len(value)
+            longest_key = key
+    return longest_key
 
 
 def calculate_statistical_distance(distribution_1, distribution_2):
