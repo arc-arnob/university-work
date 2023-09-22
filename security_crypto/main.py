@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from math import gcd
 
 
 def count_letters(sentence, calculate_percentage=True):
@@ -27,9 +28,10 @@ def count_letters(sentence, calculate_percentage=True):
     return letter_counts
 
 
+# Letter Frequencies % and Letter Probability Distribution
 def calculate_letter_frequency(text):
     # Initialize an empty dictionary to store letter frequencies
-    letter_frequency = {}
+    letter_frequency = {chr(i): 0 for i in range(ord('A'), ord('Z')+1)}
 
     # Iterate through each character in the text
     for char in text:
@@ -50,7 +52,14 @@ def calculate_letter_frequency(text):
     return letter_frequency
 
 
-def plot_histogram(letter_counts):
+def calculater_letter_probability_distribution(letter_frequencies):
+    total_letters = sum(letter_frequencies.values())
+    letter_probabilities = {char: freq / total_letters for char, freq in letter_frequencies.items()}
+    # print("Letter Probability Distribution: ", letter_probabilities)
+    return letter_probabilities
+
+
+def plot_histogram(letter_counts, key='N/A'):
     fig, axs = plt.subplots(2)
 
     # Extract letters and counts for plotting
@@ -66,7 +75,7 @@ def plot_histogram(letter_counts):
     axs[0].bar(letters, counts)
     axs[0].set_xlabel('Letters')
     axs[0].set_ylabel('Frequencies (%)')
-    axs[0].set_title('Letter Counts in the Sentence')
+    axs[0].set_title('Letter Counts in the Sentence - ' + key)
 
     axs[1].bar(alphabets, frequencies)
     axs[1].set_xlabel('Letters')
@@ -109,7 +118,10 @@ def count_array_elements(array):
 
 def generate_ngrams(text, n):
     # Split the text into words
-    words = text.replace(' ', '')
+    words = '';
+    for index, value in enumerate(text):
+        if value.isalpha():
+            words += value
     # Generate n-grams
     ngrams = []
     for i in range(len(words) - n + 1):
@@ -134,6 +146,67 @@ def perform_cipher_decrypt(cipher):
         print("Decrypted Message: ", d_k, "Key: ", chr(i + 97), str(i) + '\n')
 
 
+def perform_vigenere_cipher(ciphertext):
+    # English Letter Frequencies
+    english_letter_frequencies = {
+        'A': 8.2, 'B': 1.5, 'C': 2.8, 'D': 4.3, 'E': 12.7,
+        'F': 2.2, 'G': 2.0, 'H': 6.1, 'I': 7.0, 'J': 0.2,
+        'K': 0.8, 'L': 4.0, 'M': 2.4, 'N': 6.7, 'O': 7.5,
+        'P': 1.9, 'Q': 0.1, 'R': 6.0, 'S': 6.3, 'T': 9.1,
+        'U': 2.8, 'V': 1.0, 'W': 2.4, 'X': 0.2, 'Y': 2.0, 'Z': 0.1
+    }
+    bigrams = generate_ngrams(ciphertext, 2)
+    trigrams = generate_ngrams(ciphertext, 3)
+    print("bigrams: ", bigrams)
+    print("Trigrams", trigrams)
+    bigram_indexes = calculate_distance_between_n_grams(bigrams)
+    bigram_distance_list = []
+    for index, i in enumerate(bigram_indexes['WX']):    # TODO: Get the Bigram with maximum occurrences
+        if index == len(bigram_indexes['WX']) - 1:
+            continue
+        bigram_distance_list.append(bigram_indexes['WX'][index + 1] - i)
+    print("GCD Values: ", list_of_gcd(bigram_distance_list), "with distances", bigram_distance_list)
+    bins = bin_creation_with_n(sentence, 6)     # TODO: Run these Bins over almost all sensible GCDs
+
+    # Debugging Info:
+    print("Bins:", len(bins), bins[5])
+
+    # Cryptanalysis with plots are not helpful hence, trying statistical distance
+    # TODO: Do it for all bins
+    english_letter_probability_distribution = calculater_letter_probability_distribution(english_letter_frequencies)
+
+    statistical_distribution_table = {}
+    for i in range(0, 26):
+        given_bin_letter_frequencies = calculate_letter_frequency(perform_k_shift(''.join(bins[5]), i))
+        plot_histogram(given_bin_letter_frequencies, str(i))
+        given_bin_letter_probability_distribution = calculater_letter_probability_distribution(given_bin_letter_frequencies)
+        # print(english_letter_probability_distribution, given_bin_letter_probability_distribution)  # TODO: Plot these on graphs
+        print("Statistical Distance with shift i", str(i), calculate_statistical_distance(english_letter_probability_distribution,
+                                                                          given_bin_letter_probability_distribution))
+
+
+def perform_k_shift(ciphertext, shift):
+    shifted_ciphertext = ''.join(
+        chr(((ord(char) - ord('A') + shift) % 26) + ord('A')) if char.isalpha() else char
+        for char in ciphertext.upper()
+    )
+    return shifted_ciphertext
+
+
+def calculate_statistical_distance(distribution_1, distribution_2):
+    set_of_all_keys = set(distribution_1.keys()).union(set(distribution_2.keys()))
+    # delta(X_k, Y_k)
+    total_variation_distance = 0.0
+    for key in set_of_all_keys:
+        prob1 = distribution_1.get(key, 0.0)  # Probability of key in distribution 1
+        prob2 = distribution_2.get(key, 0.0)  # Probability of key in distribution 2
+        total_variation_distance += abs(prob1 - prob2)
+
+    total_variation_distance *= 0.5  # Multiply by 0.5 as per the formula
+
+    return total_variation_distance
+
+
 # Substitution Cipher
 def s_replace(cipher, a, b):
     return cipher.replace(a, b)
@@ -149,12 +222,24 @@ def calculate_distance_between_n_grams(array):
     return element_meta
 
 
+def list_of_gcd(numbers):
+    result_array = []
+    for i in range(len(numbers)):
+        for j in range(i + 1, len(numbers)):
+            num1 = numbers[i]
+            num2 = numbers[j]
+            gcd_result = gcd(num1, num2)
+            result_array.append(gcd_result)
+    return result_array
+
+
 def bin_creation_with_n(sentence, n):
+    # Debug code: 0x001
     bin_matrix = []
     for i in range(n):
         bin = []
         for index, value in enumerate(sentence.replace(' ', '')):
-            if index % 5 == i:
+            if index % n == i:
                 bin.append(value)
         bin_matrix.append(bin)
     return bin_matrix
@@ -162,41 +247,44 @@ def bin_creation_with_n(sentence, n):
 
 if __name__ == "__main__":
     # Input sentence
-    sentence = '''eocecwami kz acrp fkso avg gpeww qm hjs naveq afgs hhbgj pg poeioi vv
-qgbertp cur ucfta eolfkql tai hpfuh puksrlopg eo xreviphpr vlqjcnoee pitl hjs
-dptrkzv glalhvgyg yvz vbwkasf hse tqgyweod ig xjl lxweh vipaitm ehxc dycwust
-veehc uspdl fcjy vc dptmp dvgfp taia hrfso snkcy opr gagmnso vc xadi ka aqfp
-ptpcaodzp thhcf qjcnoeevl wu cye hj vos ocdt vspzioso agh nvjgr qohhu pb vvp
-whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
-qzodmpn opr riyxkuu'''
+#     sentence = '''eocecwami kz acrp fkso avg gpeww qm hjs naveq afgs hhbgj pg poeioi vv
+# qgbertp cur ucfta eolfkql tai hpfuh puksrlopg eo xreviphpr vlqjcnoee pitl hjs
+# dptrkzv glalhvgyg yvz vbwkasf hse tqgyweod ig xjl lxweh vipaitm ehxc dycwust
+# veehc uspdl fcjy vc dptmp dvgfp taia hrfso snkcy opr gagmnso vc xadi ka aqfp
+# ptpcaodzp thhcf qjcnoeevl wu cye hj vos ocdt vspzioso agh nvjgr qohhu pb vvp
+# whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
+# qzodmpn opr riyxkuu'''
+    sentence = '''UTPDHUG NYH USVKCG MVCE FXL KQIB. WX RKU GI TZN, RLS BBHZLXMSNP
+KDKS; CEB IH HKEW IBA, YYM SBR PFR SBS, JV UPL O UVADGR HRRWXF. JV ZTVOOV
+YH ZCQU Y UKWGEB, PL UQFB P FOUKCG, TBF RQ VHCF R KPG, OU KFT ZCQU MAW
+QKKW ZGSY, FP PGM QKFTK UQFB DER EZRN, MCYE, MG UCTFSVA, WP KFT ZCQU
+MAW KQIJS. LCOV NTHDNV JPNUJVB IH GGV RWX ONKCGTHKFL XG VKD, ZJM VG
+CCI MVGD JPNUJ, RLS EWVKJT ASGUCS MVGD; DDK VG NYH PWUV CCHIIY RD DBQN
+RWTH PFRWBBI VTTK VCGNTGSF FL IAWU XJDUS, HFP VHCF, RR LAWEY QDFS
+RVMEES FZB CHH JRTT MVGZP UBZN FD ATIIYRTK WP KFT HIVJCI; TBF BLDPWPX
+RWTH ULAW TG VYCHX KQLJS US DCGCW OPPUPR, VG KFDNUJK GI JIKKC PL KGCJ
+IAOV KFTR GJFSAW KTZLZES WG RWXWT VWTL WP XPXGG, CJ FPOS VYC BTZCUW
+XG ZGJQ PMHTRAIBJG WMGFG. JZQ DPB JVYGM ZCLEWXR: CEB IAOV NYH JIKKC
+TGCWXF UHF JZK.
+WX VCU LD YITKFTK WPKCGVCWIQT PWVY QEBFKKQ, QNH NZTTW IRFL IAS
+VFRPE ODJRXGSPTC EKWPTGEES, GMCG
+TTVVPLTFFJ; YCW WV NYH TZYRWH LOKU MU AWO, KFPM VG BLTP VQN RD DSGG
+AWKWUKKPL KGCJ, XY OPP KPG ONZTT ICUJCHLSF KFT DBQNJTWUG. DYN MVCK
+ZT MFWCW HTWF FD JL, OPU YAE CH LQ! PGR UF, YH MWPP RXF CDJCGOSF, XMS
+UZGJQ JL, SXVPN HBG!'''
 
-
-
-    # Determine if percentage calculation is required
-    calculate_percentage = True
+    perform_vigenere_cipher(sentence)
+    # perform_k_shift('Hello World', 1)
 
     # Count the letters in the sentence
-    counts = calculate_letter_frequency(sentence)
-
-    # Print the letter counts
-    # print("Letter counts:")
-    # for letter, count in counts.items():
-    #     print(f'{letter}: {count}' if not calculate_percentage else f'{letter}: {count:.2f}%')
+    # counts = calculate_letter_frequency(sentence)
 
     # Get bigrams
-    print("bigrams count", count_array_elements(generate_ngrams(sentence, 2)))
+    # print("bigrams count", count_array_elements(generate_ngrams(sentence, 2)))
     # Get trigrams
     # print(generate_ngrams(sentence, 3))
-    print("trigrams count", count_array_elements(generate_ngrams(sentence, 3)))
+    # print("trigrams count", count_array_elements(generate_ngrams(sentence, 3)))
     # Plot the histogram
-    # plot_histogram(counts)
-    # plot_letter_frequencies()
-    # perform_cipher_decrypt(sentence)
-    # r_1 = s_replace(sentence, 'p', 'e')
-    # r_2 = s_replace(r_1, 'i', 'h')
-    # r_2 = s_replace(r_2, 'v', 't')
-    # print(r_2)
-
     ###### WHY NOT Substitution #######
     # Not Substitution Cipher, Since words like 'vv' appears and
     # In standard English, there is no two-letter word with the exact same letters. Every valid English two-letter word consists of distinct letters.
@@ -205,17 +293,21 @@ qzodmpn opr riyxkuu'''
     # Try Vigenere
     # Find the length of the keyword
     # Look at bigrams
-    print("bigrams: ", generate_ngrams(sentence, 2))
-    print("Trigrams", generate_ngrams(sentence, 3))
-    print(calculate_distance_between_n_grams(generate_ngrams(sentence, 2)))
+    # print("bigrams: ", generate_ngrams(sentence, 2))
+    # print("Trigrams", generate_ngrams(sentence, 3))
+    # bigram_idxs = calculate_distance_between_n_grams(generate_ngrams(sentence, 2))
+    # bigram_distance_array = []
+    # for index, i in enumerate(bigram_idxs['WX']):
+    #     if index == len(bigram_idxs['WX']) - 1:
+    #         continue
+    #     bigram_distance_array.append(bigram_idxs['WX'][index + 1] - i)
+    # print("GCD Values: ", list_of_gcd(bigram_distance_array), "with distances", bigram_distance_array)
+    # bins = bin_creation_with_n(sentence, 6)
 
-    bins = bin_creation_with_n(sentence, 5)
+    # shift_1 = calculate_letter_frequency(bins[0])
+    # shift_2 = calculate_letter_frequency(bins[1])
+    # shift_3 = calculate_letter_frequency(bins[2])
 
-    shift_1 = calculate_letter_frequency(bins[0])
-    shift_2 = calculate_letter_frequency(bins[1])
-    shift_3 = calculate_letter_frequency(bins[2])
-
-    plot_histogram(shift_1)
-    plot_histogram(shift_2)
-    plot_histogram(shift_3)
-
+    #plot_histogram(shift_1)
+    #plot_histogram(shift_2)
+    #plot_histogram(shift_3)
