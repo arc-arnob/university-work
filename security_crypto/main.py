@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from math import gcd
+from shift_cipher import *
 
 
 def count_letters(sentence, calculate_percentage=True):
@@ -26,30 +27,6 @@ def count_letters(sentence, calculate_percentage=True):
             letter_counts[letter] *= 100.0
 
     return letter_counts
-
-
-# Letter Frequencies % and Letter Probability Distribution
-def calculate_letter_frequency(text):
-    # Initialize an empty dictionary to store letter frequencies
-    letter_frequency = {chr(i): 0 for i in range(ord('A'), ord('Z')+1)}
-
-    # Iterate through each character in the text
-    for char in text:
-        # Consider only alphabetic characters
-        if char.isalpha():
-            # Convert to uppercase to count regardless of case
-            char = char.upper()
-            # Update the count for the corresponding letter
-            letter_frequency[char] = letter_frequency.get(char, 0) + 1
-
-    # Calculate the total number of letters in the text
-    total_letters = sum(letter_frequency.values())
-
-    # Convert counts to percentages
-    for char, count in letter_frequency.items():
-        letter_frequency[char] = (count / total_letters) * 100
-
-    return letter_frequency
 
 
 def calculater_letter_probability_distribution(letter_frequencies):
@@ -142,7 +119,7 @@ def count_array_elements(array):
 
 def generate_ngrams(text, n):
     # Split the text into words
-    words = '';
+    words = ''
     for index, value in enumerate(text):
         if value.isalpha():
             words += value
@@ -151,12 +128,7 @@ def generate_ngrams(text, n):
     for i in range(len(words) - n + 1):
         ngram = ''.join(words[i:i+n])
         ngrams.append(ngram)
-
     return ngrams
-
-
-def testfunction():
-    print(-1 % 26)
 
 
 def perform_cipher_decrypt(cipher):
@@ -172,13 +144,13 @@ def perform_cipher_decrypt(cipher):
 
 def perform_vigenere_cipher(ciphertext):
     # English Letter Frequencies
-    english_letter_frequencies = {
-        'A': 8.2, 'B': 1.5, 'C': 2.8, 'D': 4.3, 'E': 12.7,
-        'F': 2.2, 'G': 2.0, 'H': 6.1, 'I': 7.0, 'J': 0.2,
-        'K': 0.8, 'L': 4.0, 'M': 2.4, 'N': 6.7, 'O': 7.5,
-        'P': 1.9, 'Q': 0.1, 'R': 6.0, 'S': 6.3, 'T': 9.1,
-        'U': 2.8, 'V': 1.0, 'W': 2.4, 'X': 0.2, 'Y': 2.0, 'Z': 0.1
-    }
+    # english_letter_frequencies = {
+    #     'A': 8.2, 'B': 1.5, 'C': 2.8, 'D': 4.3, 'E': 12.7,
+    #     'F': 2.2, 'G': 2.0, 'H': 6.1, 'I': 7.0, 'J': 0.2,
+    #     'K': 0.8, 'L': 4.0, 'M': 2.4, 'N': 6.7, 'O': 7.5,
+    #     'P': 1.9, 'Q': 0.1, 'R': 6.0, 'S': 6.3, 'T': 9.1,
+    #     'U': 2.8, 'V': 1.0, 'W': 2.4, 'X': 0.2, 'Y': 2.0, 'Z': 0.1
+    # }
     bigrams = generate_ngrams(ciphertext, 2)
     trigrams = generate_ngrams(ciphertext, 3)
     bigram_indexes = calculate_distance_between_n_grams(bigrams)
@@ -202,108 +174,59 @@ def perform_vigenere_cipher(ciphertext):
         possible_key = ""
         bins = bin_creation_with_n(sentence, key_len_val)
         for index, value in enumerate(bins):
-            res = perform_shift_cipher_analysis(' '.join(bins[index]))
+            res = perform_shift_cipher_analysis(''.join(bins[index]))
             possible_key += res[0]
-        print("Possible Key", possible_key)
-        print('decrypted text, ', vigenere_decrypt(ciphertext, possible_key))
+        key_val_is = vigenere_decrypt(ciphertext, possible_key).replace(' ','')[:key_len_val]
+        print("Possible Key: ", key_val_is)
+        print('Decrypted text: ', vigenere_decrypt(ciphertext, key_val_is))
 
 
-def vigenere_decrypt(ciphertext, key):
-    ciphertext = ciphertext.lower()
-    # print("Cipher", ciphertext)
-    key = key.lower()
-    key_length = len(key)
-    key_char = None
-    decrypted_text = ''
-    i = 0
-    c_i = 0
-    for index, value in enumerate(ciphertext):
-        key_char = key[c_i % key_length]
-        if not value.isalpha():
-            decrypted_text += value
-        else:
-            decrypted_text += chr(((ord(value) - ord(key_char)) % 26) + 97)
-            c_i += 1
-    print(decrypted_text)
-    '''
-    a b c a b c a b c a b c a
-    c h o c h o c h o c h o c
-    '''
-    return decrypted_text
+# def perform_k_shift(ciphertext, shift):
+#     shifted_ciphertext = ''.join(
+#         chr(((ord(char) - ord('A') + shift) % 26) + ord('A')) if char.isalpha() else char
+#         for char in ciphertext.upper()
+#     )
+#     return shifted_ciphertext
 
 
-def perform_shift_cipher_analysis(ciphertext):
-    english_letter_frequencies = {
-        'A': 8.2, 'B': 1.5, 'C': 2.8, 'D': 4.3, 'E': 12.7,
-        'F': 2.2, 'G': 2.0, 'H': 6.1, 'I': 7.0, 'J': 0.2,
-        'K': 0.8, 'L': 4.0, 'M': 2.4, 'N': 6.7, 'O': 7.5,
-        'P': 1.9, 'Q': 0.1, 'R': 6.0, 'S': 6.3, 'T': 9.1,
-        'U': 2.8, 'V': 1.0, 'W': 2.4, 'X': 0.2, 'Y': 2.0, 'Z': 0.1
-    }
-    english_letter_probability_distribution = calculater_letter_probability_distribution(english_letter_frequencies)
-    min_stat_distance = float("inf")
-    min_stat_inx = -1
-    for i in range(26):
-        shifted_letter_frequencies = calculate_letter_frequency(perform_k_shift(ciphertext, i))
-        # plot_histogram(shifted_letter_frequencies)
-        shifted_letters_distribution = calculater_letter_probability_distribution(shifted_letter_frequencies)
-        stat_distance = calculate_statistical_distance(
-            english_letter_probability_distribution, shifted_letters_distribution)
-        if stat_distance <= min_stat_distance:
-            min_stat_distance = stat_distance
-            min_stat_inx = i
-    # print(perform_k_shift(ciphertext, min_stat_inx),min_stat_distance, min_stat_inx)
-    return perform_k_shift(ciphertext, min_stat_inx)
-    # perform_cipher_decrypt(ciphertext)
-
-
-def perform_k_shift(ciphertext, shift):
-    shifted_ciphertext = ''.join(
-        chr(((ord(char) - ord('A') + shift) % 26) + ord('A')) if char.isalpha() else char
-        for char in ciphertext.upper()
-    )
-    return shifted_ciphertext
-
-
-def get_bigram_with_most_occurrences(bigrams_dict):
+def get_bigram_with_more_than_one_occurrences(bigrams_dict):
+    # print(bigrams_dict)
     max_length = 0
     longest_key = None
+    longest_value = None
+    repeated_n_gram_vals = []
     for key, value in bigrams_dict.items():
-        if len(value) > max_length:
-            max_length = len(value)
-            longest_key = key
-    return longest_key
+        if len(value) > 1:
+            repeated_n_gram_vals.append(value)
+    return repeated_n_gram_vals
 
 
 def get_repeated_n_grams_distance_values(n_gram_dict):
     result = []
-    for key, value in n_gram_dict.items():
-        if len(value) == 2:
-            if value[1] - value[0] > 25:
-                continue
-            result.append(value[1] - value[0])
-        elif len(value) > 2:
-            intermediate_diff_list = []
-            for i in range(len(value) - 1):
-                intermediate_diff = value[i + 1] - value[i]
-                intermediate_diff_list.append(intermediate_diff)
-                list_gcd = list_of_gcd(intermediate_diff_list)
-            result.append(min(list_gcd))
-    print(result)
+    most_occurrences = get_bigram_with_more_than_one_occurrences(n_gram_dict)
+    # print("Most occ: ", get_bigram_with_more_than_one_occurrences(n_gram_dict))
+    distance_list = []
+    for index, value in enumerate(most_occurrences):
+        distance_list.append(calculate_differences(value))
+    result = list_of_gcd([element for sublist in distance_list for element in sublist])
     return result
 
 
-def calculate_statistical_distance(distribution_1, distribution_2):
-    set_of_all_keys = set(distribution_1.keys()).union(set(distribution_2.keys()))
-    # delta(X_k, Y_k)
-    total_variation_distance = 0.0
-    for key in set_of_all_keys:
-        prob1 = distribution_1.get(key, 0.0)  # Probability of key in distribution 1
-        prob2 = distribution_2.get(key, 0.0)  # Probability of key in distribution 2
-        total_variation_distance += abs(prob1 - prob2)
+def calculate_differences(arr):
+    """
+    Calculate differences between consecutive elements in an array.
 
-    total_variation_distance *= 0.5  # Multiply by 0.5 as per the formula
-    return total_variation_distance
+    Parameters:
+        arr (list of int): The input array of integers.
+
+    Returns:
+        list of int: Array containing differences between consecutive elements.
+    """
+    differences = []
+    for i in range(len(arr) - 1):
+        diff = arr[i + 1] - arr[i]
+        differences.append(diff)
+    return differences
 
 
 def calculate_distance_between_n_grams(array):
@@ -345,41 +268,58 @@ def bin_creation_with_n(sentence, n):
     return bin_matrix
 
 
-def cipher_stats(sentence):
-    given_bin_letter_frequencies = calculate_letter_frequency(sentence)
+def vigenere_decrypt(ciphertext, key):
+    ciphertext = ciphertext.lower()
+    # print("Cipher", ciphertext)
+    key = key.lower()
+    key_length = len(key)
+    key_char = None
+    decrypted_text = ''
+    i = 0
+    c_i = 0
+    for index, value in enumerate(ciphertext):
+        key_char = key[c_i % key_length]
+        if not value.isalpha():
+            decrypted_text += value
+        else:
+            decrypted_text += chr(((ord(value) - ord(key_char)) % 26) + 97)
+            c_i += 1
+    return decrypted_text
 
 
 if __name__ == "__main__":
     # Input sentence
-#     sentence = '''eocecwami kz acrp fkso avg gpeww qm hjs naveq afgs hhbgj pg poeioi vv
-# qgbertp cur ucfta eolfkql tai hpfuh puksrlopg eo xreviphpr vlqjcnoee pitl hjs
-# dptrkzv glalhvgyg yvz vbwkasf hse tqgyweod ig xjl lxweh vipaitm ehxc dycwust
-# veehc uspdl fcjy vc dptmp dvgfp taia hrfso snkcy opr gagmnso vc xadi ka aqfp
-# ptpcaodzp thhcf qjcnoeevl wu cye hj vos ocdt vspzioso agh nvjgr qohhu pb vvp
-# whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
-# qzodmpn opr riyxkuu'''
+    sentence = '''eocecwami kz acrp fkso avg gpeww qm hjs naveq afgs hhbgj pg poeioi vv
+qgbertp cur ucfta eolfkql tai hpfuh puksrlopg eo xreviphpr vlqjcnoee pitl hjs
+dptrkzv glalhvgyg yvz vbwkasf hse tqgyweod ig xjl lxweh vipaitm ehxc dycwust
+veehc uspdl fcjy vc dptmp dvgfp taia hrfso snkcy opr gagmnso vc xadi ka aqfp
+ptpcaodzp thhcf qjcnoeevl wu cye hj vos ocdt vspzioso agh nvjgr qohhu pb vvp
+whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
+qzodmpn opr riyxkuu'''
 
-    sentence = '''UTPDHUG NYH USVKCG MVCE FXL KQIB. WX RKU GI TZN, RLS BBHZLXMSNP
-KDKS; CEB IH HKEW IBA, YYM SBR PFR SBS, JV UPL O UVADGR HRRWXF. JV ZTVOOV
-YH ZCQU Y UKWGEB, PL UQFB P FOUKCG, TBF RQ VHCF R KPG, OU KFT ZCQU MAW
-QKKW ZGSY, FP PGM QKFTK UQFB DER EZRN, MCYE, MG UCTFSVA, WP KFT ZCQU
-MAW KQIJS. LCOV NTHDNV JPNUJVB IH GGV RWX ONKCGTHKFL XG VKD, ZJM VG
-CCI MVGD JPNUJ, RLS EWVKJT ASGUCS MVGD; DDK VG NYH PWUV CCHIIY RD DBQN
-RWTH PFRWBBI VTTK VCGNTGSF FL IAWU XJDUS, HFP VHCF, RR LAWEY QDFS
-RVMEES FZB CHH JRTT MVGZP UBZN FD ATIIYRTK WP KFT HIVJCI; TBF BLDPWPX
-RWTH ULAW TG VYCHX KQLJS US DCGCW OPPUPR, VG KFDNUJK GI JIKKC PL KGCJ
-IAOV KFTR GJFSAW KTZLZES WG RWXWT VWTL WP XPXGG, CJ FPOS VYC BTZCUW
-XG ZGJQ PMHTRAIBJG WMGFG. JZQ DPB JVYGM ZCLEWXR: CEB IAOV NYH JIKKC
-TGCWXF UHF JZK.
-WX VCU LD YITKFTK WPKCGVCWIQT PWVY QEBFKKQ, QNH NZTTW IRFL IAS
-VFRPE ODJRXGSPTC EKWPTGEES, GMCG
-TTVVPLTFFJ; YCW WV NYH TZYRWH LOKU MU AWO, KFPM VG BLTP VQN RD DSGG
-AWKWUKKPL KGCJ, XY OPP KPG ONZTT ICUJCHLSF KFT DBQNJTWUG. DYN MVCK
-ZT MFWCW HTWF FD JL, OPU YAE CH LQ! PGR UF, YH MWPP RXF CDJCGOSF, XMS
-UZGJQ JL, SXVPN HBG!'''
+#     sentence = '''UTPDHUG NYH USVKCG MVCE FXL KQIB. WX RKU GI TZN, RLS BBHZLXMSNP
+# KDKS; CEB IH HKEW IBA, YYM SBR PFR SBS, JV UPL O UVADGR HRRWXF. JV ZTVOOV
+# YH ZCQU Y UKWGEB, PL UQFB P FOUKCG, TBF RQ VHCF R KPG, OU KFT ZCQU MAW
+# QKKW ZGSY, FP PGM QKFTK UQFB DER EZRN, MCYE, MG UCTFSVA, WP KFT ZCQU
+# MAW KQIJS. LCOV NTHDNV JPNUJVB IH GGV RWX ONKCGTHKFL XG VKD, ZJM VG
+# CCI MVGD JPNUJ, RLS EWVKJT ASGUCS MVGD; DDK VG NYH PWUV CCHIIY RD DBQN
+# RWTH PFRWBBI VTTK VCGNTGSF FL IAWU XJDUS, HFP VHCF, RR LAWEY QDFS
+# RVMEES FZB CHH JRTT MVGZP UBZN FD ATIIYRTK WP KFT HIVJCI; TBF BLDPWPX
+# RWTH ULAW TG VYCHX KQLJS US DCGCW OPPUPR, VG KFDNUJK GI JIKKC PL KGCJ
+# IAOV KFTR GJFSAW KTZLZES WG RWXWT VWTL WP XPXGG, CJ FPOS VYC BTZCUW
+# XG ZGJQ PMHTRAIBJG WMGFG. JZQ DPB JVYGM ZCLEWXR: CEB IAOV NYH JIKKC
+# TGCWXF UHF JZK.
+# WX VCU LD YITKFTK WPKCGVCWIQT PWVY QEBFKKQ, QNH NZTTW IRFL IAS
+# VFRPE ODJRXGSPTC EKWPTGEES, GMCG
+# TTVVPLTFFJ; YCW WV NYH TZYRWH LOKU MU AWO, KFPM VG BLTP VQN RD DSGG
+# AWKWUKKPL KGCJ, XY OPP KPG ONZTT ICUJCHLSF KFT DBQNJTWUG. DYN MVCK
+# ZT MFWCW HTWF FD JL, OPU YAE CH LQ! PGR UF, YH MWPP RXF CDJCGOSF, XMS
+# UZGJQ JL, SXVPN HBG!'''
 
-    # sentence = '''max gxmaxketgwl bl ahfx mh fhkx ubvrvexl matg ixhiex'''
+    # sentence = text_lowercase = '''BN MHO LCTRM OP E ZNSMLSRE VIMY, VMDX TTKOW MG A OILVYGT KHIXFF. PXOZPC KULH ZEQM ETCR SRAEK, LYWR BN MHOMP MHHUQLRL AGD ZYPLUBTC. XFX SMROIRL EVHY AGMH MHO QCEOWY YJ ATR AOBRQ TNW TRI FNM HF MSLOEKSKXGHNL. TKPJ LKRSMVYIEKS DSSVH MHO WIR, A MECXYFEGT DS FNMTN KQZBTBOX. EKBDLT DLGL UKBKR RTPXSDVW, GAMUBI DBNWS K AYR TH FVSSKILH - ZEPDS ULYSK PIMH QVCXNXRI, SDYEKIXK Y AAOEX SD MRTNAYGEIMY. MSDYEX SRSNL BNZJ AGMH XNOVER, AKTSWRL SDEDGF MHXIB HPXAFS, KRB LTNDORRL IFMOVQX TAEWWCEVXS SR RAE LEK SD DNHWVIBZE. MHSW YFAEGKQYMIHN YJ JBFX PKMLMS T VSZGW PHRDVYBT HF WSBXRG SYGGXTR.'''
+
+    sentence = '''max gxmaxketgwl bl ahfx mh fhkx ubvrvexl matg ixhiex'''
 
 
-    perform_vigenere_cipher(sentence)
-    # perform_shift_cipher_analysis(sentence)
+    # perform_vigenere_cipher(sentence)
+    print(perform_shift_cipher_analysis(sentence))
