@@ -189,8 +189,7 @@ def perform_vigenere_cipher(ciphertext):
 #     return shifted_ciphertext
 
 
-def get_bigram_with_more_than_one_occurrences(bigrams_dict):
-    # print(bigrams_dict)
+def get_ngram_with_more_than_one_occurrences(bigrams_dict):
     max_length = 0
     longest_key = None
     longest_value = None
@@ -203,7 +202,7 @@ def get_bigram_with_more_than_one_occurrences(bigrams_dict):
 
 def get_repeated_n_grams_distance_values(n_gram_dict):
     result = []
-    most_occurrences = get_bigram_with_more_than_one_occurrences(n_gram_dict)
+    most_occurrences = get_ngram_with_more_than_one_occurrences(n_gram_dict)
     # print("Most occ: ", get_bigram_with_more_than_one_occurrences(n_gram_dict))
     distance_list = []
     for index, value in enumerate(most_occurrences):
@@ -213,15 +212,6 @@ def get_repeated_n_grams_distance_values(n_gram_dict):
 
 
 def calculate_differences(arr):
-    """
-    Calculate differences between consecutive elements in an array.
-
-    Parameters:
-        arr (list of int): The input array of integers.
-
-    Returns:
-        list of int: Array containing differences between consecutive elements.
-    """
     differences = []
     for i in range(len(arr) - 1):
         diff = arr[i + 1] - arr[i]
@@ -295,31 +285,21 @@ dptrkzv glalhvgyg yvz vbwkasf hse tqgyweod ig xjl lxweh vipaitm ehxc dycwust
 veehc uspdl fcjy vc dptmp dvgfp taia hrfso snkcy opr gagmnso vc xadi ka aqfp
 ptpcaodzp thhcf qjcnoeevl wu cye hj vos ocdt vspzioso agh nvjgr qohhu pb vvp
 whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
-qzodmpn opr riyxkuu'''
+# qzodmpn opr riyxkuu'''
+    # sentence = '''GKAW ISKA ER DNKZVF G YTSIKNTQH ZANKOOMFH (F.M., YLHTGN NLQNAC, VVHOELUAPTRO IEAKFX, RTJFTÈNP FJVDPU) BTZ LSQRU TW UU PSLT VWCDHXWAK. JL UZX IGRP D TVANLGOY NLQNACLOM PPFITEBXF OJ XLOJ KC QFKZ LVTOOEDOIA HLUN W ADSZENXMGN NLQNAC, OFZ IP NOUS, LQE O'HW EF NWASZ ZK SHMV!'''
 
-#     sentence = '''UTPDHUG NYH USVKCG MVCE FXL KQIB. WX RKU GI TZN, RLS BBHZLXMSNP
-# KDKS; CEB IH HKEW IBA, YYM SBR PFR SBS, JV UPL O UVADGR HRRWXF. JV ZTVOOV
-# YH ZCQU Y UKWGEB, PL UQFB P FOUKCG, TBF RQ VHCF R KPG, OU KFT ZCQU MAW
-# QKKW ZGSY, FP PGM QKFTK UQFB DER EZRN, MCYE, MG UCTFSVA, WP KFT ZCQU
-# MAW KQIJS. LCOV NTHDNV JPNUJVB IH GGV RWX ONKCGTHKFL XG VKD, ZJM VG
-# CCI MVGD JPNUJ, RLS EWVKJT ASGUCS MVGD; DDK VG NYH PWUV CCHIIY RD DBQN
-# RWTH PFRWBBI VTTK VCGNTGSF FL IAWU XJDUS, HFP VHCF, RR LAWEY QDFS
-# RVMEES FZB CHH JRTT MVGZP UBZN FD ATIIYRTK WP KFT HIVJCI; TBF BLDPWPX
-# RWTH ULAW TG VYCHX KQLJS US DCGCW OPPUPR, VG KFDNUJK GI JIKKC PL KGCJ
-# IAOV KFTR GJFSAW KTZLZES WG RWXWT VWTL WP XPXGG, CJ FPOS VYC BTZCUW
-# XG ZGJQ PMHTRAIBJG WMGFG. JZQ DPB JVYGM ZCLEWXR: CEB IAOV NYH JIKKC
-# TGCWXF UHF JZK.
-# WX VCU LD YITKFTK WPKCGVCWIQT PWVY QEBFKKQ, QNH NZTTW IRFL IAS
-# VFRPE ODJRXGSPTC EKWPTGEES, GMCG
-# TTVVPLTFFJ; YCW WV NYH TZYRWH LOKU MU AWO, KFPM VG BLTP VQN RD DSGG
-# AWKWUKKPL KGCJ, XY OPP KPG ONZTT ICUJCHLSF KFT DBQNJTWUG. DYN MVCK
-# ZT MFWCW HTWF FD JL, OPU YAE CH LQ! PGR UF, YH MWPP RXF CDJCGOSF, XMS
-# UZGJQ JL, SXVPN HBG!'''
+    sentence = '''MHX VSKCGEKE MMNAEK IC E KXTAON SD XNVRITRBNZ AVTFTBXTSG RXXM BI YQBNZ A CMKILX 
+    FYVK HF IOVCYEPAALIRBC LULWRBTNTSSL T PHLIEJIHTBOXGV CBPRIP NSXS WYJMIILO WSUSMIDYRBOG AVTFTBXTC XM 
+    XNVRITR MHX TOBR BT XMZPMRS T FYVK HF T ROTCTTBNQ OCRWHRN XM WEMEBQGGE MHO WFBFM FYV CTCA LOXRXR MHO 
+    ZGZEGEBI ABPAEB MQ FUVH CXPHNZEB XFTN MHO GYXSTR MMNAEK SSRAX IM UCIQ T KXYGSPW TAAD GFTNZEC XFX SAIPX DHR 
+    XAML JXTMEB QYDIGG SX FTRWEB XM WEVRITR MO XNMVWIT T MOWQTGX OXI PXPXADW RAE DEIAMKD MO WERVH MHO PCGGMH YJ 
+    RAE ILKMLMEQT DLCG ETCR PCMTXR YJ RAE ILKMLMEQT SW QAIYTOH YVCHRNMLZ TH IDW AHRKECTMGDBNQ PCMTXR SR RAE 
+    DEIAMKD MO NIAKYIT YRC NSXS DLC LAFE BINXAMIXK IXYPOBH YGD LHSJRL TAE VIRMEKS SR RAE KEFIPLE WIBIAMIHN DLC 
+    OIZEXIPX CBPRIP BS GAWIB TFMEB FJTILE NI TBGXNOVC T FKEXGF WIILYQYM AGD MVWITHGBENAEK FBSK MHX 16TR GCGTNRI'''
 
-    # sentence = text_lowercase = '''BN MHO LCTRM OP E ZNSMLSRE VIMY, VMDX TTKOW MG A OILVYGT KHIXFF. PXOZPC KULH ZEQM ETCR SRAEK, LYWR BN MHOMP MHHUQLRL AGD ZYPLUBTC. XFX SMROIRL EVHY AGMH MHO QCEOWY YJ ATR AOBRQ TNW TRI FNM HF MSLOEKSKXGHNL. TKPJ LKRSMVYIEKS DSSVH MHO WIR, A MECXYFEGT DS FNMTN KQZBTBOX. EKBDLT DLGL UKBKR RTPXSDVW, GAMUBI DBNWS K AYR TH FVSSKILH - ZEPDS ULYSK PIMH QVCXNXRI, SDYEKIXK Y AAOEX SD MRTNAYGEIMY. MSDYEX SRSNL BNZJ AGMH XNOVER, AKTSWRL SDEDGF MHXIB HPXAFS, KRB LTNDORRL IFMOVQX TAEWWCEVXS SR RAE LEK SD DNHWVIBZE. MHSW YFAEGKQYMIHN YJ JBFX PKMLMS T VSZGW PHRDVYBT HF WSBXRG SYGGXTR.'''
+    print("Cipher Text Provided: ", sentence)
 
-    sentence = '''max gxmaxketgwl bl ahfx mh fhkx ubvrvexl matg ixhiex'''
+    perform_vigenere_cipher(sentence)
 
-
-    # perform_vigenere_cipher(sentence)
-    print(perform_shift_cipher_analysis(sentence))
+     #print("Cipher Text Provided: ", sentence)
+    #print("Decrypted Text: ", perform_shift_cipher_analysis(sentence))

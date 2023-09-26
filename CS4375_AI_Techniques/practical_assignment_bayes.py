@@ -70,7 +70,6 @@ class Bayes:
         return result
 
 
-
 def assignment_main():
     hypothesis = ["Bowl1", "Bowl2"]
     priors = [0.5, 0.5]
@@ -114,8 +113,6 @@ def assignment_main():
     new_file.write("'vanilla', 'chocolate', 'chocolate', 'vanilla' - posterior " + str(ce5_result) + "\n")
 
     new_file.close()
-
-
 
 
 def predict_archer_skills():

@@ -1,0 +1,12 @@
+Cookie example Bayes: 
+
+likelihood(chocolate, Bowl1) =0.7
+normalizing constant for vanilla: 0.55
+vanilla - posterior: [0.6363636363636362, 0.36363636363636365]
+'vanilla', 'chocolate', 'chocolate', 'vanilla' - posterior [0.5726210350584305, 0.4273789649415695]
+
+
+Arches Skills Inference: 
+
+All Posteriors: [0.21380370147658184, 0.5473374757800494, 0.21380370147658187, 0.025055121266786932]
+Probability That Archer is Intermediate: 0.7649521815862851

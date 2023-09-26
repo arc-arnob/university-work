@@ -1,6 +1,7 @@
 import unittest
 from practical_assignment_bayes import Bayes
 
+
 class TestBayes(unittest.TestCase):
     def setUp(self):
         # Define test data for Bayes instance
