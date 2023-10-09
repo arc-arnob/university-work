@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from math import gcd
 from shift_cipher import *
+from assignment_2_1 import *
 
 
 def count_letters(sentence, calculate_percentage=True):
@@ -297,9 +298,14 @@ whvnk wv qzmxw ku acbj vtvklhksd feexvfu oyd llcwsu oyd bw wzsf tzr uempbi
     DEIAMKD MO NIAKYIT YRC NSXS DLC LAFE BINXAMIXK IXYPOBH YGD LHSJRL TAE VIRMEKS SR RAE KEFIPLE WIBIAMIHN DLC 
     OIZEXIPX CBPRIP BS GAWIB TFMEB FJTILE NI TBGXNOVC T FKEXGF WIILYQYM AGD MVWITHGBENAEK FBSK MHX 16TR GCGTNRI'''
 
-    print("Cipher Text Provided: ", sentence)
+    #print("Cipher Text Provided: ", sentence)
 
-    perform_vigenere_cipher(sentence)
+    #perform_vigenere_cipher(sentence)
 
-     #print("Cipher Text Provided: ", sentence)
+    #print("Cipher Text Provided: ", sentence)
     #print("Decrypted Text: ", perform_shift_cipher_analysis(sentence))
+    # mscxdeg([1, 0, 0, 0, 0, 1], 10, [1, 1, 1, 1, 1, 1])
+    mscxdeg([0, 1, 1, 1, 0, 0, 0, 1], 20, [0, 1, 0, 1, 0, 1, 0, 1])
+
+
+
